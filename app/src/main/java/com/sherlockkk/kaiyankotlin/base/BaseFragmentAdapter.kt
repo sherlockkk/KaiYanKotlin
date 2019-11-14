@@ -13,8 +13,23 @@ class BaseFragmentAdapter : FragmentStatePagerAdapter {
         fm,
         BEHAVIOR_SET_USER_VISIBLE_HINT
     ) {
-        this.fragments = fragments
+        setFragments(fm, fragments, titles)
+    }
+
+    private fun setFragments(
+        fm: FragmentManager,
+        fragments: java.util.ArrayList<Fragment>,
+        titles: java.util.ArrayList<String>
+    ) {
         this.titles = titles
+        if (this.fragments.isEmpty()) {
+            val transaction = fm.beginTransaction()
+            fragments.forEach { transaction.remove(it) }
+            transaction.commitAllowingStateLoss()
+            fm.executePendingTransactions()
+        }
+        this.fragments = fragments
+        notifyDataSetChanged()
     }
 
     override fun getItem(position: Int): Fragment {
